@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Лес на Ворскле — заповедная дубрава</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0e0a;
+    --bg-2: #10140d;
+    --panel: #141911;
+    --line: rgba(215, 224, 198, 0.12);
+    --moss: #9cc06b;
+    --moss-dim: #6c8a4f;
+    --gold: #cd9e4e;
+    --bark: #7a5a3a;
+    --ink: #ece7d8;
+    --ink-dim: #a8ad9c;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: env(safe-area-inset-top, 0px);
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Manrope', Arial, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, .display {
+    font-family: 'Fraunces', Cambria, Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  a { color: inherit; }
+  img, svg { max-width: 100%; display: block; }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 64px);
+  }
+
+  /* subtle backdrop texture: layered radial glows, no imagery available offline */
+  .glow {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 900px 520px at 12% -10%, rgba(156,192,107,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 105% 20%, rgba(205,158,78,0.08), transparent 60%);
+  }
+
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(11,14,10,0.72);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px clamp(20px, 5vw, 64px);
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .brand {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    color: var(--ink);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .brand .leaf { color: var(--moss); }
+  nav.links { display: flex; gap: 28px; font-size: 14px; }
+  nav.links a {
+    text-decoration: none;
+    color: var(--ink-dim);
+    transition: color 0.2s ease;
+  }
+  nav.links a:hover { color: var(--moss); }
+  @media (max-width: 720px) { nav.links { display: none; } }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    padding: clamp(80px, 14vw, 160px) 0 clamp(60px, 8vw, 100px);
+    overflow: hidden;
+  }
+  .hero .kicker {
+    color: var(--moss);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .hero h1 {
+    font-size: clamp(48px, 8vw, 96px);
+    line-height: 0.98;
+    margin-top: 18px;
+    color: var(--ink);
+    max-width: 14ch;
+  }
+  .hero .lede {
+    margin-top: 26px;
+    max-width: 46ch;
+    font-size: clamp(16px, 1.6vw, 19px);
+    color: var(--ink-dim);
+  }
+  .hero-meta {
+    margin-top: 44px;
+    display: flex;
+    gap: clamp(24px, 5vw, 56px);
+    flex-wrap: wrap;
+  }
+  .hero-meta div strong {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .hero-meta div span {
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* hero canopy illustration */
+  .canopy {
+    position: absolute;
+    right: -6%;
+    top: -8%;
+    width: min(52vw, 620px);
+    opacity: 0.9;
+    z-index: 0;
+  }
+  .hero .wrap { position: relative; z-index: 1; }
+
+  /* ---------- sections ---------- */
+  section { position: relative; z-index: 1; padding: clamp(64px, 9vw, 110px) 0; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: clamp(36px, 5vw, 56px);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 20px;
+  }
+  .section-head .idx {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    color: var(--moss-dim);
+  }
+  .section-head h2 {
+    font-size: clamp(28px, 4vw, 40px);
+    color: var(--ink);
+  }
+
+  .divider { border: none; border-top: 1px solid var(--line); margin: 0; }
+
+  /* general info */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 56px;
+  }
+  @media (max-width: 800px) { .info-grid { grid-template-columns: 1fr; } }
+  .info-grid p { color: var(--ink-dim); margin: 0 0 20px; max-width: 56ch; }
+  .info-grid strong { color: var(--ink); font-weight: 600; }
+
+  .stat-list { display: flex; flex-direction: column; }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stat-row:last-child { border-bottom: 1px solid var(--line); }
+  .stat-row .num { font-family: 'Fraunces', serif; font-size: 30px; color: var(--gold); }
+  .stat-row .lbl { font-size: 13.5px; color: var(--ink-dim); text-align: right; max-width: 22ch; }
+
+  /* timeline */
+  .timeline { display: flex; flex-direction: column; }
+  .tl-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 28px;
+    padding: 26px 0;
+    border-top: 1px solid var(--line);
+  }
+  .tl-item:last-child { border-bottom: 1px solid var(--line); }
+  .tl-item .yr { font-family: 'Fraunces', serif; color: var(--moss); font-size: 19px; }
+  .tl-item p { margin: 0; color: var(--ink-dim); max-width: 62ch; }
+  @media (max-width: 600px) { .tl-item { grid-template-columns: 1fr; gap: 6px; } }
+
+  /* two-col with illustration */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+  @media (max-width: 800px) { .split { grid-template-columns: 1fr; } }
+  .split p { color: var(--ink-dim); max-width: 54ch; }
+  .ravine-svg { width: 100%; height: auto; }
+
+  /* card grid (flora/fauna) */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  @media (max-width: 700px) { .card-grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--bg);
+    padding: 32px 30px;
+  }
+  .card .icon { width: 34px; height: 34px; color: var(--moss); margin-bottom: 18px; }
+  .card h3 { font-size: 19px; color: var(--ink); margin-bottom: 10px; font-weight: 500; }
+  .card p { margin: 0; color: var(--ink-dim); font-size: 14.5px; max-width: 42ch; }
+
+  /* fauna stat strip */
+  .fauna-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-bottom: 48px;
+  }
+  @media (max-width: 700px) { .fauna-strip { grid-template-columns: repeat(2, 1fr); } }
+  .fauna-strip div { background: var(--panel); padding: 30px 20px; text-align: center; }
+  .fauna-strip .num { font-family: 'Fraunces', serif; font-size: 38px; color: var(--gold); }
+  .fauna-strip .lbl { font-size: 12.5px; color: var(--ink-dim); margin-top: 6px; }
+
+  /* visit steps */
+  .visit-list { display: flex; flex-direction: column; }
+  .visit-item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 22px;
+    padding: 24px 0;
+    border-top: 1px solid var(--line);
+  }
+  .visit-item:last-child { border-bottom: 1px solid var(--line); }
+  .visit-item .mark {
+    width: 34px; height: 34px;
+    border: 1px solid var(--moss-dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--moss);
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+  }
+  .visit-item h3 { font-size: 17px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+  .visit-item p { margin: 0; color: var(--ink-dim); max-width: 60ch; font-size: 14.5px; }
+
+  /* closing */
+  .closing {
+    padding: clamp(90px, 12vw, 140px) 0 clamp(60px, 8vw, 90px);
+    text-align: left;
+  }
+  .closing h2 {
+    font-size: clamp(34px, 5.5vw, 56px);
+    max-width: 16ch;
+    color: var(--ink);
+  }
+  .closing p.q {
+    margin-top: 26px;
+    max-width: 58ch;
+    font-size: 17px;
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+  .addr {
+    margin-top: 34px;
+    font-size: 13.5px;
+    color: var(--moss-dim);
+    letter-spacing: 0.02em;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 26px 0;
+  }
+  footer .wrap { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-dim); }
+
+  ::selection { background: var(--moss-dim); color: #0b0e0a; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal { animation: rise 0.9s ease both; }
+    .reveal.d1 { animation-delay: 0.08s; }
+    .reveal.d2 { animation-delay: 0.16s; }
+    .reveal.d3 { animation-delay: 0.24s; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand"><span class="leaf">🌳</span> Лес на Ворскле</div>
+    <nav class="links">
+      <a href="#svedenia">Сведения</a>
+      <a href="#istoria">История</a>
+      <a href="#landshaft">Ландшафт</a>
+      <a href="#flora">Флора</a>
+      <a href="#fauna">Фауна</a>
+      <a href="#posetit">Посещение</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <svg class="canopy" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="230" cy="150" r="150" fill="#152012"/>
+        <circle cx="210" cy="120" r="95" fill="#1c2b17"/>
+        <circle cx="290" cy="170" r="80" fill="#1c2b17"/>
+        <circle cx="150" cy="190" r="70" fill="#152012"/>
+        <circle cx="255" cy="95" r="10" fill="#cd9e4e"/>
+        <circle cx="180" cy="150" r="7" fill="#cd9e4e"/>
+        <circle cx="300" cy="220" r="8" fill="#9cc06b"/>
+      </svg>
+      <p class="kicker reveal">Государственный природный заповедник</p>
+      <h1 class="reveal d1">Лес на&nbsp;Ворскле</h1>
+      <p class="lede reveal d2">Вековая нагорная дубрава на правом берегу Ворсклы — участок заповедника «Белогорье» в Борисовском районе Белгородской области. Лес, переживший засечную черту, корабельные верфи Петра I и три столетия тишины.</p>
+      <div class="hero-meta reveal d3">
+        <div><strong>1038 га</strong><span>площадь участка</span></div>
+        <div><strong>1925</strong><span>год основания заповедника</span></div>
+        <div><strong>300 лет</strong><span>старейшим дубравам</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="svedenia">
+    <div class="wrap">
+      <div class="section-head"><span class="idx">01</span><h2>Общие сведения</h2></div>
+      <div class="info-grid">
+        <div>
+          <p><strong>Расположение.</strong> Юго-западная часть Белгородской области, Борисовский район, у посёлка Борисовка, на высоком правом берегу реки Ворсклы — притока Днепра.</p>
+          <p><strong>Границы.</strong> С юга и востока участок ограничен рекой Ворскла, с запада — рекой Готня; по периметру территории расположены селения.</p>
+          <p><strong>Статус.</strong> Один из пяти обособленных участков государственного природного заповедника «Белогорье», наряду с «Острасьевыми ярами», «Ямской степью», «Лысыми горами» и «Стенками-Изгорьями».</p>
+        </div>
+        <div class="stat-list">
+          <div class="stat-row"><span class="num">100+ лет</span><span class="lbl">возраст основного дубового массива</span></div>
+          <div class="stat-row"><span class="num">−8 / +20 °C</span><span class="lbl">средняя температура января / июля</span></div>
+          <div class="stat-row"><span class="num">≈500 мм</span><span class="lbl">осадков в год</span></div>
+          <div class="stat-row"><span class="num">25–30 м</span><span class="lbl">глубина залегания грунтовых вод</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="istoria">
+    <div class="wrap">
+      <div class="section-head"><span class="idx">02</span><h2>История</h2></div>
+      <div class="timeline">
+        <div class="tl-item"><span class="yr">XVII век</span><p>Густые дубравы служили природной защитой Белгородской засечной черты от набегов половцев, татаро-монгольских орд и крымских татар.</p></div>
+        <div class="tl-item"><span class="yr">Начало XVIII века</span><p>Лес получил первый охранный статус ещё во времена Петра I, ценившего корабельные дубравы для строительства флота.</p></div>
+        <div class="tl-item"><span class="yr">1925 год</span><p>Лесной массив на крутом правом берегу Ворсклы близ Борисовки был объявлен государственным заповедником.</p></div>
+        <div class="tl-item"><span class="yr">Наши дни</span><p>Участок «Лес на Ворскле» входит в состав заповедника «Белогорье» и открыт для экскурсионного посещения по предварительной записи.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="landshaft">
+    <div class="wrap">
+      <div class="section-head"><span class="idx">03</span><h2>Ландшафт</h2></div>
+      <div class="split">
+        <div>
+          <p>Рельеф участка эрозионный: береговой склон изрезан оврагами и балками, которые здесь по-местному называют «ярами».</p>
+          <p><strong style="color:var(--ink)">Вервейков яр</strong> — самый длинный и глубокий, настоящий лесной каньон. <strong style="color:var(--ink)">Волчий яр</strong> — широкий и разветвлённый. <strong style="color:var(--ink)">Удодов яр</strong> — один из характерных лесных оврагов дубравы.</p>
+          <p>Постоянных ручьёв на участке нет: грунтовые воды залегают слишком глубоко, поэтому растительность питается только атмосферными осадками.</p>
+        </div>
+        <svg class="ravine-svg" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M0,220 C80,180 100,240 180,200 C260,160 280,230 360,190 C410,165 440,200 480,180 L480,300 L0,300 Z" fill="#152012"/>
+          <path d="M0,250 C90,215 120,260 200,230 C280,200 300,255 380,225 C430,205 450,235 480,220 L480,300 L0,300 Z" fill="#1c2b17"/>
+          <g stroke="#9cc06b" stroke-width="1.4" opacity="0.55">
+            <path d="M40,190 Q60,150 50,110" fill="none"/>
+            <path d="M50,110 Q65,95 60,70" fill="none"/>
+            <path d="M50,110 Q35,95 40,75" fill="none"/>
+            <path d="M220,170 Q240,120 228,80" fill="none"/>
+            <path d="M228,80 Q245,60 240,35" fill="none"/>
+            <path d="M228,80 Q210,62 216,38" fill="none"/>
+            <path d="M370,180 Q388,140 378,105" fill="none"/>
+            <path d="M378,105 Q392,88 388,62" fill="none"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="flora">
+    <div class="wrap">
+      <div class="section-head"><span class="idx">04</span><h2>Растительный мир</h2></div>
+      <div class="card-grid">
+        <div class="card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c3 3 6 6 6 10a6 6 0 0 1-12 0c0-4 3-7 6-10z"/><path d="M12 12v10"/></svg>
+          <h3>Основной ярус</h3>
+          <p>Вековые дубы 80–300 лет — ядро заповедной дубравы, типичной для лесостепи Среднерусской возвышенности.</p>
+        </div>
+        <div class="card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 20c4-1 6-4 6-8s-2-7-6-8"/><path d="M20 20c-4-1-6-4-6-8s2-7 6-8"/></svg>
+          <h3>Деревья и кустарники</h3>
+          <p>Клён, разные виды бересклета, крушина, шиповник — плотный подлесок под пологом дубравы.</p>
+        </div>
+        <div class="card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18M6 9c0 3 3 4 6 4M18 9c0 3-3 4-6 4"/></svg>
+          <h3>Травяной покров</h3>
+          <p>Сныть, медуница и другие типичные виды лесостепных дубрав, образующие густой весенний ковёр.</p>
+        </div>
+        <div class="card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
+          <h3>Редкие виды</h3>
+          <p>Печёночница и гриб грифола — виды, занесённые в Красную книгу, особо охраняемые на территории заповедника.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="fauna">
+    <div class="wrap">
+      <div class="section-head"><span class="idx">05</span><h2>Животный мир</h2></div>
+      <div class="fauna-strip">
+        <div><div class="num">70+</div><div class="lbl">видов птиц, ~40 гнездящихся</div></div>
+        <div><div class="num">~30</div><div class="lbl">видов млекопитающих</div></div>
+        <div><div class="num">7</div><div class="lbl">видов земноводных</div></div>
+        <div><div class="num">6</div><div class="lbl">видов пресмыкающихся</div></div>
+      </div>
+      <div class="split">
+        <p><strong style="color:var(--ink)">Млекопитающие:</strong> в лесу обычны кабаны, лесные куницы и европейские косули — их присутствие заметно влияет на растительные сообщества дубравы.</p>
+        <p><strong style="color:var(--ink)">Птицы:</strong> более половины гнездящихся видов относятся к отряду воробьинообразных; часть видов встречается только на зимовках и пролёте.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="posetit">
+    <div class="wrap">
+      <div class="section-head"><span class="idx">06</span><h2>Для посетителей</h2></div>
+      <div class="visit-list">
+        <div class="visit-item"><span class="mark">1</span><div><h3>Экологическая тропа</h3><p>Пеший маршрут длиной 340 метров знакомит гостей с типичной растительностью дубравы и её обитателями.</p></div></div>
+        <div class="visit-item"><span class="mark">2</span><div><h3>Музей природы</h3><p>Экскурсия по заповеднику традиционно включает посещение музея природы на территории усадьбы.</p></div></div>
+        <div class="visit-item"><span class="mark">3</span><div><h3>Режим работы</h3><p>Заповедник и музей принимают посетителей только в будние дни.</p></div></div>
+        <div class="visit-item"><span class="mark">4</span><div><h3>Как попасть</h3><p>Для посещения необходимо записаться заранее — организованными группами или по предварительной договорённости.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <h2>Живая память леса</h2>
+      <p class="q">«Лес на Ворскле» — редчайший сохранившийся фрагмент нагорной дубравы южной лесостепи: лес, который защищал границу государства, кормил корабельные верфи и три века спустя остаётся домом для косуль, куниц и десятков видов птиц.</p>
+      <p class="addr">Белгородская область, Борисовский район, п. Борисовка, Монастырский пер., д. 3</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Заповедник «Лес на Ворскле» — участок ГПЗ «Белогорье»</span>
+    <span>2026</span>
+  </div>
+</footer>
+
+</body>
+</html>
